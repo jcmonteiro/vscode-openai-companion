@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
         max_tokens: 1000,
         n: 1,
         stop: null,
-        temperature: 0.5,
+        temperature: 0,
       });
 
       const generatedCode = result.data.choices[0].text;
