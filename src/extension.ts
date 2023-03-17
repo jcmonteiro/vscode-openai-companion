@@ -5,13 +5,13 @@ export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand('extension.generateCode', async () => {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
-      vscode.window.showErrorMessage('No active editor found.');
+      vscode.window.showErrorMessage('😢 No active editor found.');
       return;
     }
 
     const selectedText = editor.document.getText(editor.selection);
     if (!selectedText) {
-      vscode.window.showErrorMessage('No text selected.');
+      vscode.window.showErrorMessage('😢 No text selected.');
       return;
     }
 
@@ -19,12 +19,12 @@ export function activate(context: vscode.ExtensionContext) {
       let apiKey = vscode.workspace.getConfiguration('openai-companion').get<string>('apiKey');
       if (!apiKey) {
         vscode.window.showWarningMessage(
-          'No OpenAI API key found in VSCode configuration openai-companion.apiKey. Will try env variable OPENAI_API_KEY.'
+          '🫠 No OpenAI API key found in VSCode configuration openai-companion.apiKey. Will try env variable OPENAI_API_KEY.'
         );
         apiKey = process.env.OPENAI_API_KEY;
         if (!apiKey) {
           vscode.window.showErrorMessage(
-            'Environment variable OPENAI_API_KEY does not exist.'
+            '😢 Environment variable OPENAI_API_KEY does not exist.'
           );
           return;
         }
@@ -35,6 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
       });
       const client = new OpenAIApi(configuration);
 
+      vscode.window.showInformationMessage('🚀 Text sent for completion. Please, be patient...')
       const result = await client.createCompletion({
         model: "text-davinci-003",
         prompt: selectedText,
@@ -47,7 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       const generatedCode = result.data.choices[0].text;
       if (!generatedCode) {
-        vscode.window.showErrorMessage('Unable to generate code... 😢');
+        vscode.window.showErrorMessage('😢 Unable to generate code...');
         return;
       }
 
@@ -56,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
       });
     } catch (error) {
       const { message } = error as { message?: string; };
-      vscode.window.showErrorMessage(`Error generating code: ${message ? message : JSON.stringify(error)}`);
+      vscode.window.showErrorMessage(`😢 Error generating code: ${message ? message : JSON.stringify(error)}`);
     }
   });
 
