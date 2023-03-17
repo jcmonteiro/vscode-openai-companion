@@ -36,7 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
       const client = new OpenAIApi(configuration);
 
       const result = await client.createCompletion({
-        model: "text-davinci-002",
+        model: "text-davinci-003",
         prompt: selectedText,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         max_tokens: 1000,
