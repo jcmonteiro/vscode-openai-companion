@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { Configuration as OpenAIConfiguration, OpenAIApi } from 'openai';
 
 export function activate(context: vscode.ExtensionContext) {
-  let disposable = vscode.commands.registerCommand('extension.generateCode', async () => {
+  const disposable = vscode.commands.registerCommand('extension.generateCode', async () => {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
       vscode.window.showErrorMessage('No active editor found.');
@@ -49,4 +49,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable);
 }
 
-export function deactivate() {}
+export function deactivate() {
+  // Nothing needed here
+}
