@@ -16,8 +16,14 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     try {
+      const apiKey = vscode.workspace.getConfiguration('openai-companion').get<string>('apiKey');
+      if (!apiKey) {
+        vscode.window.showErrorMessage('No OpenAI API key found. Please add one to your VSCode configuration.');
+        return;
+      }
+
       const configuration = new OpenAIConfiguration({
-        apiKey: process.env.OPENAI_API_KEY,
+        apiKey,
       });
       const client = new OpenAIApi(configuration);
 
