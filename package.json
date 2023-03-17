@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "openai-companion.helloWorld",
-        "title": "Hello World"
+        "command": "extension.generateCode",
+        "title": "OpenAI Companion"
       }
     ]
   },
