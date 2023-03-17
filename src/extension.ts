@@ -25,7 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
         model: "text-davinci-002",
         prompt: selectedText,
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        max_tokens: 100,
+        max_tokens: 1000,
         n: 1,
         stop: null,
         temperature: 0.5,
