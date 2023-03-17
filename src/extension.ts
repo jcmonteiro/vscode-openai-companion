@@ -16,10 +16,18 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     try {
-      const apiKey = vscode.workspace.getConfiguration('openai-companion').get<string>('apiKey');
+      let apiKey = vscode.workspace.getConfiguration('openai-companion').get<string>('apiKey');
       if (!apiKey) {
-        vscode.window.showErrorMessage('No OpenAI API key found. Please add one to your VSCode configuration.');
-        return;
+        vscode.window.showWarningMessage(
+          'No OpenAI API key found in VSCode configuration openai-companion.apiKey. Will try env variable OPENAI_API_KEY.'
+        );
+        apiKey = process.env.OPENAI_API_KEY;
+        if (!apiKey) {
+          vscode.window.showErrorMessage(
+            'Environment variable OPENAI_API_KEY does not exist.'
+          );
+          return;
+        }
       }
 
       const configuration = new OpenAIConfiguration({
