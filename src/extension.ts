@@ -1,26 +1,52 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { Configuration as OpenAIConfiguration, OpenAIApi } from 'openai';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  let disposable = vscode.commands.registerCommand('extension.generateCode', async () => {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+      vscode.window.showErrorMessage('No active editor found.');
+      return;
+    }
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "openai-companion" is now active!');
+    const selectedText = editor.document.getText(editor.selection);
+    if (!selectedText) {
+      vscode.window.showErrorMessage('No text selected.');
+      return;
+    }
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('openai-companion.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from OpenAI Companion!');
-	});
+    try {
+      const configuration = new OpenAIConfiguration({
+        apiKey: process.env.OPENAI_API_KEY,
+      });
+      const client = new OpenAIApi(configuration);
 
-	context.subscriptions.push(disposable);
+      const result = await client.createCompletion({
+        model: "text-davinci-002",
+        prompt: selectedText,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        max_tokens: 100,
+        n: 1,
+        stop: null,
+        temperature: 0.5,
+      });
+
+      const generatedCode = result.data.choices[0].text;
+      if (!generatedCode) {
+        vscode.window.showErrorMessage('Unable to generate code... 😢');
+        return;
+      }
+
+      editor.edit((editBuilder) => {
+        editBuilder.insert(editor.selection.end, generatedCode);
+      });
+    } catch (error) {
+      const { message } = error as { message?: string; };
+      vscode.window.showErrorMessage(`Error generating code: ${message ? message : JSON.stringify(error)}`);
+    }
+  });
+
+  context.subscriptions.push(disposable);
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}
